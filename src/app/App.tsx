@@ -1122,7 +1122,7 @@ function SportsSelectionScreen({
                                 <div className="flex items-center gap-2 mb-0.5">
                                   <span className="text-[10px] w-3 text-center flex-shrink-0" style={{ fontFamily: "'DM Mono', monospace", color: i === 0 ? "#00e57a" : "#5a6578" }}>{i + 1}</span>
                                   <TeamSwatch team={p.team} size={10} />
-                                  <span className="flex-1 text-[11px] font-black uppercase truncate" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: i === 0 ? "#00e57a" : "#f0f2f5" }}>{p.name}</span>
+                                  <span className="flex-1 text-[11px] font-black uppercase truncate" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "#f0f2f5" }}>{p.name}</span>
                                 </div>
                                 <div className="flex flex-wrap gap-x-2 pl-5">
                                   {activeDisplayStats.map((stat) => (
@@ -1317,7 +1317,7 @@ function StatsConfigScreen({
                       <div className="flex items-center gap-2 mb-0.5">
                         <span className="text-[10px] w-3 flex-shrink-0 text-center" style={{ fontFamily: "'DM Mono', monospace", color: i === 0 ? "#00e57a" : "#5a6578" }}>{i + 1}</span>
                         <TeamSwatch team={p.team} size={10} />
-                        <span className="flex-1 text-[11px] font-black uppercase truncate" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: i === 0 ? "#00e57a" : "#f0f2f5" }}>{p.name}</span>
+                        <span className="flex-1 text-[11px] font-black uppercase truncate" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "#f0f2f5" }}>{p.name}</span>
                       </div>
                       <div className="flex flex-wrap gap-x-2 pl-5">
                         {activeStats.map((stat) => (
@@ -2344,7 +2344,7 @@ function CarplayScreen({ onExit, matches, enabledStats, sortStats, defaultView }
                   {/* name */}
                   <div style={{ ...base, borderBottom: rowBorder,
                     fontSize: cfg.tblNameSz, fontFamily: "'Barlow Condensed', sans-serif",
-                    color: i === 0 ? "#00e57a" : "#f0f2f5", fontWeight: 800,
+                    color: "#f0f2f5", fontWeight: 800,
                     letterSpacing: "0.04em", textTransform: "uppercase",
                     overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                     paddingRight: "1rem" }}>
