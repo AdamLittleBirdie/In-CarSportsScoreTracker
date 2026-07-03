@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Trophy,
-  Zap,
-  Activity,
-  Globe,
   Radio,
   Clock,
   CheckCircle,
@@ -76,6 +73,129 @@ interface Match {
     bowler: string;
     batters: string[];
   };
+}
+
+// ─── Sport Ball Icons ────────────────────────────────────────────────────────
+
+// Pixel-art football (shared by AFL + NRL, different palette)
+function FootballPixel({ size = 20, body, shadow, hi, laceBg, lace }: {
+  size?: number; className?: string;
+  body: string; shadow: string; hi: string; laceBg: string; lace: string;
+}) {
+  // 32×20 pixel grid — each unit = 1 px in viewBox
+  const S = { display: "inline-block", flexShrink: 0 } as const;
+  return (
+    <svg width={Math.round(size * 1.6)} height={size} viewBox="0 0 32 20" shapeRendering="crispEdges" style={S}>
+      {/* ── Outer dark outline (pixel-stepped oval) ── */}
+      <polygon points="
+        11,0 21,0
+        26,2 29,4
+        31,8 31,12
+        29,16 26,18
+        21,20 11,20
+        6,18 3,16
+        1,12 1,8
+        3,4 6,2
+      " fill={shadow} />
+      {/* ── Main body ── */}
+      <polygon points="
+        12,1 20,1
+        25,3 28,5
+        30,8 30,12
+        28,15 25,17
+        20,19 12,19
+        7,17 4,15
+        2,12 2,8
+        4,5 7,3
+      " fill={body} />
+      {/* ── Top-left highlight zone ── */}
+      <polygon points="7,3 14,1 17,2 13,6 7,7 4,5" fill={hi} />
+      {/* ── Bottom-right shadow zone ── */}
+      <polygon points="21,19 26,17 29,15 27,15 23,17" fill={shadow} />
+      {/* ── Lace band background (centre strip) ── */}
+      <rect x="12" y="6" width="8" height="8" fill={laceBg} />
+      {/* ── White vertical lace spine ── */}
+      <rect x="15" y="5" width="2" height="10" fill={lace} />
+      {/* ── Horizontal lace bars ── */}
+      <rect x="13" y="7"  width="6" height="1" fill={lace} />
+      <rect x="13" y="10" width="6" height="1" fill={lace} />
+      <rect x="13" y="13" width="6" height="1" fill={lace} />
+    </svg>
+  );
+}
+
+function AflBall({ size = 20 }: { size?: number; className?: string }) {
+  return <FootballPixel size={size}
+    body="#CC2200" shadow="#7A1000" hi="#E84030" laceBg="#A01A00" lace="#FFFFFF" />;
+}
+
+function NrlBall({ size = 20 }: { size?: number; className?: string }) {
+  return <FootballPixel size={size}
+    body="#F0EDE6" shadow="#999999" hi="#FFFFFF" laceBg="#D8D4CC" lace="#555555" />;
+}
+
+function CricketBall({ size = 20 }: { size?: number; className?: string }) {
+  // 20×20 pixel grid — pixelated circle with prominent horizontal seam
+  const S = { display: "inline-block", flexShrink: 0 } as const;
+  return (
+    <svg width={size} height={size} viewBox="0 0 20 20" shapeRendering="crispEdges" style={S}>
+      {/* ── Dark outline circle ── */}
+      <polygon points="
+        7,0 13,0 17,2 19,4 20,7 20,13 19,16 17,18 13,20 7,20 3,18 1,16 0,13 0,7 1,4 3,2
+      " fill="#7A0A0A" />
+      {/* ── Body ── */}
+      <polygon points="
+        7,1 13,1 16,3 18,5 19,7 19,13 18,15 16,17 13,19 7,19 4,17 2,15 1,13 1,7 2,5 4,3
+      " fill="#C81010" />
+      {/* ── Top-left highlight ── */}
+      <polygon points="4,3 9,1 12,2 9,6 4,7 2,5" fill="#E03030" />
+      {/* ── Bottom-right shadow ── */}
+      <polygon points="13,19 17,17 19,14 18,14 15,16" fill="#7A0A0A" />
+      {/* ── Seam: upper arc (cream) ── */}
+      <polygon points="1,8 2,7 5,7 6,8 5,9 2,9" fill="#F0D878" />
+      <polygon points="5,7 8,6 11,6 12,7 11,8 8,8 5,8" fill="#F0D878" />
+      <polygon points="11,6 14,7 16,8 15,9 13,8 11,7" fill="#F0D878" />
+      <polygon points="16,8 18,9 19,11 18,11 17,10" fill="#F0D878" />
+      {/* ── Seam: lower arc (cream) ── */}
+      <polygon points="1,12 2,11 4,11 5,12 4,13 2,13" fill="#F0D878" />
+      <polygon points="5,12 8,12 11,12 12,13 11,14 8,14 5,13" fill="#F0D878" />
+      <polygon points="12,13 14,12 17,11 18,12 16,13 13,14" fill="#F0D878" />
+      <polygon points="17,13 19,12 19,14 18,14 17,14" fill="#F0D878" />
+    </svg>
+  );
+}
+
+function SoccerBall({ size = 20 }: { size?: number; className?: string }) {
+  // 20×20 pixel grid — white ball with classic black patch pattern
+  const S = { display: "inline-block", flexShrink: 0 } as const;
+  return (
+    <svg width={size} height={size} viewBox="0 0 20 20" shapeRendering="crispEdges" style={S}>
+      {/* ── Dark outline circle ── */}
+      <polygon points="
+        7,0 13,0 17,2 19,4 20,7 20,13 19,16 17,18 13,20 7,20 3,18 1,16 0,13 0,7 1,4 3,2
+      " fill="#333333" />
+      {/* ── White body ── */}
+      <polygon points="
+        7,1 13,1 16,3 18,5 19,7 19,13 18,15 16,17 13,19 7,19 4,17 2,15 1,13 1,7 2,5 4,3
+      " fill="#F2F2F2" />
+      {/* ── Top highlight ── */}
+      <polygon points="4,3 9,1 12,2 9,5 4,6 2,5" fill="#FFFFFF" />
+      {/* ── Centre pentagon (black) ── */}
+      <polygon points="10,7 12,8 12,11 10,12 8,11 8,8" fill="#111111" />
+      {/* ── Top patch ── */}
+      <polygon points="9,2 11,2 13,4 12,6 10,6 8,6 7,4" fill="#111111" />
+      {/* ── Top-left patch ── */}
+      <polygon points="3,5 6,3 7,5 6,7 4,8 2,7" fill="#111111" />
+      {/* ── Top-right patch ── */}
+      <polygon points="17,5 14,3 13,5 14,7 16,8 18,7" fill="#111111" />
+      {/* ── Bottom-left patch ── */}
+      <polygon points="2,13 4,12 6,13 6,15 4,17 2,15" fill="#111111" />
+      {/* ── Bottom-right patch ── */}
+      <polygon points="18,13 16,12 14,13 14,15 16,17 18,15" fill="#111111" />
+      {/* ── Bottom patch ── */}
+      <polygon points="8,14 12,14 13,16 11,18 9,18 7,16" fill="#111111" />
+    </svg>
+  );
 }
 
 // ─── Team Colors ─────────────────────────────────────────────────────────────
@@ -470,7 +590,7 @@ const SPORTS_CONFIG = [
   {
     id: "afl",
     name: "AFL",
-    icon: Trophy,
+    icon: AflBall,
     leagues: ["AFL Premiership", "AFLW"],
     teams: {
       "AFL Premiership": [
@@ -490,7 +610,7 @@ const SPORTS_CONFIG = [
   {
     id: "nrl",
     name: "NRL",
-    icon: Zap,
+    icon: NrlBall,
     leagues: ["NRL Premiership", "State of Origin"],
     teams: {
       "NRL Premiership": [
@@ -506,7 +626,7 @@ const SPORTS_CONFIG = [
   {
     id: "cricket",
     name: "Cricket",
-    icon: Activity,
+    icon: CricketBall,
     leagues: ["International Test Cricket", "BBL", "IPL"],
     teams: {
       "International Test Cricket": [
@@ -528,7 +648,7 @@ const SPORTS_CONFIG = [
   {
     id: "football",
     name: "Football",
-    icon: Globe,
+    icon: SoccerBall,
     leagues: ["Premier League", "La Liga", "UEFA Champions League"],
     teams: {
       "Premier League": [
@@ -1903,8 +2023,8 @@ function CarplayScreen({ onExit, matches, enabledStats, sortStats, defaultView }
   };
 
   const sportIcons: Record<string, React.ReactNode> = {
-    AFL: <Trophy size={12} strokeWidth={2} />, NRL: <Zap size={12} strokeWidth={2} />,
-    Cricket: <Activity size={12} strokeWidth={2} />, Football: <Globe size={12} strokeWidth={2} />,
+    AFL: <AflBall size={14} />, NRL: <NrlBall size={14} />,
+    Cricket: <CricketBall size={14} />, Football: <SoccerBall size={14} />,
   };
 
   if (!match) return (
