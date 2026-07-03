@@ -2062,7 +2062,7 @@ function CarplayScreen({ onExit, matches, enabledStats, sortStats, defaultView }
             style={{ fontSize: cfg.timeSz, fontFamily: "'DM Mono', monospace", color: "#00e57a" }}>
             {match.time}
           </span>
-          <span className="text-border font-black" style={{ fontSize: cfg.timeSz, fontFamily: "'Barlow Condensed', sans-serif" }}>
+          <span className="font-black" style={{ fontSize: cfg.timeSz, fontFamily: "'Barlow Condensed', sans-serif", color: "#ffffff" }}>
             VS
           </span>
           <div className="flex-1 h-px bg-white/10" />
@@ -2098,7 +2098,7 @@ function CarplayScreen({ onExit, matches, enabledStats, sortStats, defaultView }
         </div>
         {/* VS + time */}
         <div className="flex flex-col items-center gap-0.5 px-1">
-          <span className="font-black text-border" style={{ fontSize: cfg.nameSz, fontFamily: "'Barlow Condensed', sans-serif" }}>VS</span>
+          <span className="font-black" style={{ fontSize: cfg.nameSz, fontFamily: "'Barlow Condensed', sans-serif", color: "#ffffff" }}>VS</span>
           <span className="font-mono font-semibold" style={{ fontSize: cfg.timeSz, fontFamily: "'DM Mono', monospace", color: "#00e57a" }}>{match.time}</span>
         </div>
         {/* Away */}
