@@ -1000,15 +1000,15 @@ function SportsSelectionScreen({
                             {preview.map((p, i) => (
                               <div key={p.name} className="px-3 py-1.5 border-b border-border last:border-b-0">
                                 <div className="flex items-center gap-2 mb-0.5">
-                                  <span className="text-[10px] w-3 text-center flex-shrink-0" style={{ fontFamily: "'DM Mono', monospace", color: i === 0 ? "#f5a623" : "#5a6578" }}>{i + 1}</span>
+                                  <span className="text-[10px] w-3 text-center flex-shrink-0" style={{ fontFamily: "'DM Mono', monospace", color: i === 0 ? "#00e57a" : "#5a6578" }}>{i + 1}</span>
                                   <TeamSwatch team={p.team} size={10} />
-                                  <span className="flex-1 text-[11px] font-black uppercase truncate" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: i === 0 ? "#f5a623" : "#f0f2f5" }}>{p.name}</span>
+                                  <span className="flex-1 text-[11px] font-black uppercase truncate" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: i === 0 ? "#00e57a" : "#f0f2f5" }}>{p.name}</span>
                                 </div>
                                 <div className="flex flex-wrap gap-x-2 pl-5">
                                   {activeDisplayStats.map((stat) => (
                                     <span key={stat} className="text-[9px]" style={{ fontFamily: "'DM Mono', monospace" }}>
                                       <span className="text-muted-foreground">{stat} </span>
-                                      <span style={{ color: stat === activeSortStat ? "#f5a623" : "#a0aab8" }}>{p.stats[stat] ?? "–"}</span>
+                                      <span style={{ color: stat === activeSortStat ? "#00e57a" : "#a0aab8" }}>{p.stats[stat] ?? "–"}</span>
                                     </span>
                                   ))}
                                 </div>
@@ -1195,15 +1195,15 @@ function StatsConfigScreen({
                   {previewPlayers.map((p, i) => (
                     <div key={p.name} className="mb-1.5 last:mb-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-[10px] w-3 flex-shrink-0 text-center" style={{ fontFamily: "'DM Mono', monospace", color: i === 0 ? "#f5a623" : "#5a6578" }}>{i + 1}</span>
+                        <span className="text-[10px] w-3 flex-shrink-0 text-center" style={{ fontFamily: "'DM Mono', monospace", color: i === 0 ? "#00e57a" : "#5a6578" }}>{i + 1}</span>
                         <TeamSwatch team={p.team} size={10} />
-                        <span className="flex-1 text-[11px] font-black uppercase truncate" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: i === 0 ? "#f5a623" : "#f0f2f5" }}>{p.name}</span>
+                        <span className="flex-1 text-[11px] font-black uppercase truncate" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: i === 0 ? "#00e57a" : "#f0f2f5" }}>{p.name}</span>
                       </div>
                       <div className="flex flex-wrap gap-x-2 pl-5">
                         {activeStats.map((stat) => (
                           <span key={stat} className="text-[9px]" style={{ fontFamily: "'DM Mono', monospace" }}>
                             <span className="text-muted-foreground">{stat} </span>
-                            <span style={{ color: stat === activeSortStat ? "#f5a623" : "#a0aab8" }}>{p.stats[stat] ?? "–"}</span>
+                            <span style={{ color: stat === activeSortStat ? "#00e57a" : "#a0aab8" }}>{p.stats[stat] ?? "–"}</span>
                           </span>
                         ))}
                       </div>
@@ -2199,7 +2199,7 @@ function CarplayScreen({ onExit, matches, enabledStats, sortStats, defaultView }
               {statCols.map((stat) => (
                 <div key={stat} style={{ ...base, background: hdrBg, borderBottom: hdrBorder,
                   fontSize: cfg.tblHeaderSz, fontFamily: "'Barlow Condensed', sans-serif",
-                  color: stat === activeSortStat ? "#f5a623" : "#5a6578",
+                  color: stat === activeSortStat ? "#00e57a" : "#5a6578",
                   fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
                   whiteSpace: "nowrap", paddingRight: "1rem" }}>
                   {stat}
@@ -2214,7 +2214,7 @@ function CarplayScreen({ onExit, matches, enabledStats, sortStats, defaultView }
                   {/* rank */}
                   <div style={{ ...base, borderBottom: rowBorder, justifyContent: "center",
                     fontSize: cfg.tblRankSz, fontFamily: "'DM Mono', monospace",
-                    color: i === 0 ? "#f5a623" : "#5a6578", fontWeight: 500 }}>
+                    color: i === 0 ? "#00e57a" : "#5a6578", fontWeight: 500 }}>
                     {i + 1}
                   </div>
                   {/* swatch */}
@@ -2224,7 +2224,7 @@ function CarplayScreen({ onExit, matches, enabledStats, sortStats, defaultView }
                   {/* name */}
                   <div style={{ ...base, borderBottom: rowBorder,
                     fontSize: cfg.tblNameSz, fontFamily: "'Barlow Condensed', sans-serif",
-                    color: i === 0 ? "#f5a623" : "#f0f2f5", fontWeight: 800,
+                    color: i === 0 ? "#00e57a" : "#f0f2f5", fontWeight: 800,
                     letterSpacing: "0.04em", textTransform: "uppercase",
                     overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                     paddingRight: "1rem" }}>
@@ -2234,7 +2234,7 @@ function CarplayScreen({ onExit, matches, enabledStats, sortStats, defaultView }
                   {statCols.map((stat) => (
                     <div key={stat} style={{ ...base, borderBottom: rowBorder,
                       fontSize: cfg.tblValueSz, fontFamily: "'DM Mono', monospace",
-                      color: stat === activeSortStat ? (i === 0 ? "#f5a623" : "#c49030") : "#a0aab8",
+                      color: stat === activeSortStat ? (i === 0 ? "#00e57a" : "#00a558") : "#a0aab8",
                       fontWeight: 500, whiteSpace: "nowrap", paddingRight: "1rem" }}>
                       {p.stats[stat] ?? "–"}
                     </div>
