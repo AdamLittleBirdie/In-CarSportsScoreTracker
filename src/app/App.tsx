@@ -11,7 +11,6 @@ import {
   Car,
   Settings,
   BarChart2,
-  Home,
   X,
   RefreshCw,
   User,
@@ -25,7 +24,7 @@ import { motion, AnimatePresence } from "motion/react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type Screen = "splash" | "home" | "sports" | "stats" | "settings" | "carplay";
+type Screen = "splash" | "sports" | "scores" | "stats" | "settings" | "carplay";
 
 interface Player {
   name: string;
@@ -43,7 +42,8 @@ interface Match {
   awayScore: string;
   time: string;
   status: "live" | "upcoming" | "finished";
-  startTime?: Date; // For upcoming matches
+  startTime?: Date;
+  completedAt?: string; // ISO string, for "finished" matches
   stats: { label: string; home: string; away: string }[];
   topPlayers: Player[];
   scoreProgression?: {
@@ -198,6 +198,42 @@ function SoccerBall({ size = 20 }: { size?: number; className?: string }) {
   );
 }
 
+function BasketballBall({ size = 20 }: { size?: number; className?: string }) {
+  // 20×20 pixel grid — orange ball with black seam lines
+  const S = { display: "inline-block", flexShrink: 0 } as const;
+  return (
+    <svg width={size} height={size} viewBox="0 0 20 20" shapeRendering="crispEdges" style={S}>
+      {/* ── Dark outline circle ── */}
+      <polygon points="7,0 13,0 17,2 19,4 20,7 20,13 19,16 17,18 13,20 7,20 3,18 1,16 0,13 0,7 1,4 3,2" fill="#7A3800" />
+      {/* ── Body ── */}
+      <polygon points="7,1 13,1 16,3 18,5 19,7 19,13 18,15 16,17 13,19 7,19 4,17 2,15 1,13 1,7 2,5 4,3" fill="#E8651A" />
+      {/* ── Top-left highlight ── */}
+      <polygon points="4,3 9,1 12,2 9,6 4,7 2,5" fill="#F0822A" />
+      {/* ── Bottom-right shadow ── */}
+      <polygon points="13,19 17,17 19,14 18,14 15,16" fill="#7A3800" />
+      {/* ── Horizontal equator seam ── */}
+      <rect x="1" y="9"  width="18" height="1" fill="#111111" />
+      <rect x="1" y="10" width="18" height="1" fill="#111111" />
+      {/* ── Vertical centre seam ── */}
+      <rect x="9"  y="1" width="1" height="18" fill="#111111" />
+      <rect x="10" y="1" width="1" height="18" fill="#111111" />
+      {/* ── Left curved seam ── */}
+      <rect x="3" y="2"  width="1" height="2" fill="#111111" />
+      <rect x="2" y="4"  width="1" height="4" fill="#111111" />
+      <rect x="3" y="8"  width="1" height="4" fill="#111111" />
+      <rect x="4" y="12" width="1" height="4" fill="#111111" />
+      <rect x="3" y="16" width="1" height="2" fill="#111111" />
+      {/* ── Right curved seam ── */}
+      <rect x="16" y="2"  width="1" height="2" fill="#111111" />
+      <rect x="17" y="4"  width="1" height="4" fill="#111111" />
+      <rect x="16" y="8"  width="1" height="4" fill="#111111" />
+      <rect x="15" y="12" width="1" height="4" fill="#111111" />
+      <rect x="16" y="16" width="1" height="2" fill="#111111" />
+    </svg>
+  );
+}
+
+
 // ─── Team Colors ─────────────────────────────────────────────────────────────
 
 const TEAM_COLORS: Record<string, string[]> = {
@@ -340,6 +376,47 @@ const TEAM_COLORS: Record<string, string[]> = {
   "Stuttgart":            ["#CC0000", "#FFFFFF"],
   "Sturm Graz":           ["#000000", "#FFFFFF"],
   "Young Boys":           ["#FFD200", "#000000"],
+  // ── NBA ──
+  "Atlanta Hawks":        ["#C1D32F", "#E03A3E"],
+  "Boston Celtics":       ["#007A33", "#BA9653"],
+  "Brooklyn Nets":        ["#000000", "#FFFFFF"],
+  "Charlotte Hornets":    ["#1D1160", "#00788C"],
+  "Chicago Bulls":        ["#CE1141", "#000000"],
+  "Cleveland Cavaliers":  ["#860038", "#FDBB30"],
+  "Dallas Mavericks":     ["#00538C", "#002B5E"],
+  "Denver Nuggets":       ["#0E2240", "#FEC524"],
+  "Detroit Pistons":      ["#C8102E", "#1D42BA"],
+  "Golden State Warriors":["#1D428A", "#FFC72C"],
+  "Houston Rockets":      ["#CE1141", "#000000"],
+  "Indiana Pacers":       ["#002D62", "#FDBB30"],
+  "LA Clippers":          ["#C8102E", "#1D428A"],
+  "LA Lakers":            ["#552583", "#FDB927"],
+  "Memphis Grizzlies":    ["#5D76A9", "#12173F"],
+  "Miami Heat":           ["#98002E", "#F9A01B"],
+  "Milwaukee Bucks":      ["#00471B", "#EEE1C6"],
+  "Minnesota Timberwolves":["#0C2340", "#236192"],
+  "New Orleans Pelicans": ["#0C2340", "#C8102E"],
+  "New York Knicks":      ["#006BB6", "#F58426"],
+  "Oklahoma City Thunder":["#007AC1", "#EF3B24"],
+  "Orlando Magic":        ["#0077C0", "#000000"],
+  "Philadelphia 76ers":   ["#006BB6", "#ED174C"],
+  "Phoenix Suns":         ["#1D1160", "#E56020"],
+  "Portland Trail Blazers":["#E03A3E", "#000000"],
+  "Sacramento Kings":     ["#5A2D81", "#63727A"],
+  "San Antonio Spurs":    ["#C4CED4", "#000000"],
+  "Toronto Raptors":      ["#CE1141", "#000000"],
+  "Utah Jazz":            ["#002B5C", "#00471B"],
+  "Washington Wizards":   ["#002B5C", "#E31837"],
+  // ── NBL ──
+  "Adelaide 36ers":       ["#E8251F", "#1B3866"],
+  "Brisbane Bullets":     ["#00304F", "#C8A850"],
+  "Cairns Taipans":       ["#007B5F", "#000000"],
+  "Illawarra Hawks":      ["#CE1141", "#F9A01B"],
+  "Melbourne United":     ["#000000", "#C8A850"],
+  "New Zealand Breakers": ["#003087", "#FFFFFF"],
+  "Perth Wildcats":       ["#CC0000", "#F5D080"],
+  "SE Melbourne Phoenix": ["#FF6B00", "#000000"],
+  "Sydney Kings":         ["#FFD700", "#003087"],
 };
 
 function TeamSwatch({ team, size = 20 }: { team: string; size?: number }) {
@@ -584,6 +661,144 @@ const MATCHES: Match[] = [
     stats: [],
     topPlayers: [],
   },
+  // ── Live Basketball ───────────────────────────────────────────────────────
+  {
+    id: "nba1",
+    sport: "Basketball",
+    league: "NBA",
+    homeTeam: "LA Lakers",
+    awayTeam: "Golden State Warriors",
+    homeScore: "87",
+    awayScore: "82",
+    time: "Q3 4:12",
+    status: "live",
+    stats: [
+      { label: "Points", home: "87", away: "82" },
+      { label: "Rebounds", home: "32", away: "29" },
+      { label: "Assists", home: "22", away: "18" },
+    ],
+    topPlayers: [
+      { name: "Anthony Davis",    team: "LA Lakers",            stats: { "Points": "24", "Rebounds": "12", "Assists": "3", "Steals": "2", "Blocks": "3", "Turnovers": "2", "3-Pointers": "0", "FG%": "62%", "FT%": "70%", "Fantasy Score": "48" } },
+      { name: "LeBron James",     team: "LA Lakers",            stats: { "Points": "22", "Rebounds": "7",  "Assists": "9", "Steals": "1", "Blocks": "1", "Turnovers": "4", "3-Pointers": "2", "FG%": "52%", "FT%": "75%", "Fantasy Score": "44" } },
+      { name: "Stephen Curry",    team: "Golden State Warriors", stats: { "Points": "26", "Rebounds": "3",  "Assists": "6", "Steals": "2", "Blocks": "0", "Turnovers": "3", "3-Pointers": "5", "FG%": "48%", "FT%": "92%", "Fantasy Score": "46" } },
+      { name: "Draymond Green",   team: "Golden State Warriors", stats: { "Points": "8",  "Rebounds": "11", "Assists": "8", "Steals": "3", "Blocks": "2", "Turnovers": "2", "3-Pointers": "0", "FG%": "44%", "FT%": "60%", "Fantasy Score": "38" } },
+      { name: "Austin Reaves",    team: "LA Lakers",            stats: { "Points": "18", "Rebounds": "4",  "Assists": "5", "Steals": "1", "Blocks": "0", "Turnovers": "1", "3-Pointers": "4", "FG%": "55%", "FT%": "88%", "Fantasy Score": "36" } },
+    ],
+  },
+  {
+    id: "nbl1",
+    sport: "Basketball",
+    league: "NBL",
+    homeTeam: "Perth Wildcats",
+    awayTeam: "Melbourne United",
+    homeScore: "64",
+    awayScore: "61",
+    time: "Q4 2:30",
+    status: "live",
+    stats: [
+      { label: "Points", home: "64", away: "61" },
+      { label: "Rebounds", home: "28", away: "25" },
+      { label: "Assists", home: "14", away: "16" },
+    ],
+    topPlayers: [
+      { name: "Bryce Cotton",     team: "Perth Wildcats",   stats: { "Points": "22", "Rebounds": "3",  "Assists": "7", "Steals": "2", "Blocks": "0", "Turnovers": "2", "3-Pointers": "3", "FG%": "51%", "FT%": "89%", "Fantasy Score": "40" } },
+      { name: "Jo Lisch",         team: "Perth Wildcats",   stats: { "Points": "14", "Rebounds": "5",  "Assists": "4", "Steals": "1", "Blocks": "0", "Turnovers": "1", "3-Pointers": "2", "FG%": "48%", "FT%": "82%", "Fantasy Score": "28" } },
+      { name: "Chris Goulding",   team: "Melbourne United", stats: { "Points": "18", "Rebounds": "4",  "Assists": "3", "Steals": "1", "Blocks": "0", "Turnovers": "2", "3-Pointers": "4", "FG%": "47%", "FT%": "86%", "Fantasy Score": "32" } },
+      { name: "Ian Clark",        team: "Melbourne United", stats: { "Points": "16", "Rebounds": "2",  "Assists": "6", "Steals": "0", "Blocks": "0", "Turnovers": "3", "3-Pointers": "3", "FG%": "44%", "FT%": "79%", "Fantasy Score": "28" } },
+      { name: "Keanu Pinder",     team: "Perth Wildcats",   stats: { "Points": "12", "Rebounds": "9",  "Assists": "2", "Steals": "1", "Blocks": "2", "Turnovers": "1", "3-Pointers": "0", "FG%": "58%", "FT%": "65%", "Fantasy Score": "26" } },
+    ],
+  },
+  // ── Previous Results (finished, within 24 h) ──────────────────────────────
+  {
+    id: "nba_fin1",
+    sport: "Basketball",
+    league: "NBA",
+    homeTeam: "Boston Celtics",
+    awayTeam: "LA Lakers",
+    homeScore: "118",
+    awayScore: "112",
+    time: "Final",
+    status: "finished",
+    completedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    stats: [
+      { label: "Points", home: "118", away: "112" },
+      { label: "Rebounds", home: "44", away: "41" },
+      { label: "Assists", home: "28", away: "25" },
+    ],
+    topPlayers: [
+      { name: "Jayson Tatum",     team: "Boston Celtics", stats: { "Points": "34", "Rebounds": "10", "Assists": "6", "Steals": "2", "Blocks": "1", "Turnovers": "3", "3-Pointers": "4", "FG%": "51%", "FT%": "88%", "Fantasy Score": "58" } },
+      { name: "Anthony Davis",    team: "LA Lakers",      stats: { "Points": "32", "Rebounds": "14", "Assists": "3", "Steals": "1", "Blocks": "4", "Turnovers": "2", "3-Pointers": "0", "FG%": "61%", "FT%": "71%", "Fantasy Score": "56" } },
+      { name: "Jaylen Brown",     team: "Boston Celtics", stats: { "Points": "26", "Rebounds": "6",  "Assists": "4", "Steals": "3", "Blocks": "0", "Turnovers": "2", "3-Pointers": "3", "FG%": "49%", "FT%": "82%", "Fantasy Score": "46" } },
+      { name: "LeBron James",     team: "LA Lakers",      stats: { "Points": "28", "Rebounds": "8",  "Assists": "9", "Steals": "2", "Blocks": "1", "Turnovers": "4", "3-Pointers": "2", "FG%": "54%", "FT%": "78%", "Fantasy Score": "52" } },
+      { name: "Kristaps Porziņģis", team: "Boston Celtics", stats: { "Points": "22", "Rebounds": "8", "Assists": "2", "Steals": "0", "Blocks": "3", "Turnovers": "1", "3-Pointers": "2", "FG%": "58%", "FT%": "75%", "Fantasy Score": "38" } },
+    ],
+  },
+  {
+    id: "afl_fin1",
+    sport: "AFL",
+    league: "AFL Premiership",
+    homeTeam: "Richmond",
+    awayTeam: "Carlton",
+    homeScore: "102",
+    awayScore: "94",
+    time: "Final",
+    status: "finished",
+    completedAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    stats: [
+      { label: "Disposals", home: "388", away: "362" },
+      { label: "Goals", home: "15", away: "14" },
+      { label: "Marks", home: "112", away: "98" },
+    ],
+    topPlayers: [
+      { name: "Tom Lynch",        team: "Richmond", stats: { "Goals": "5", "Behinds": "2", "Disposals": "18", "Marks": "7", "Tackles": "3", "Hit-Outs": "0", "Clearances": "1", "Fantasy Score": "112", "Goal Assists": "1", "Contested Possessions": "8" } },
+      { name: "Patrick Cripps",   team: "Carlton",  stats: { "Goals": "2", "Behinds": "1", "Disposals": "36", "Marks": "8", "Tackles": "9", "Hit-Outs": "0", "Clearances": "12", "Fantasy Score": "138", "Goal Assists": "3", "Contested Possessions": "18" } },
+      { name: "Dustin Martin",    team: "Richmond", stats: { "Goals": "3", "Behinds": "2", "Disposals": "32", "Marks": "6", "Tackles": "6", "Hit-Outs": "0", "Clearances": "4", "Fantasy Score": "122", "Goal Assists": "2", "Contested Possessions": "14" } },
+    ],
+  },
+  {
+    id: "football_fin1",
+    sport: "Football",
+    league: "Premier League",
+    homeTeam: "Liverpool",
+    awayTeam: "Tottenham",
+    homeScore: "3",
+    awayScore: "1",
+    time: "Full Time",
+    status: "finished",
+    completedAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+    stats: [
+      { label: "Possession", home: "62%", away: "38%" },
+      { label: "Shots", home: "16", away: "8" },
+      { label: "Goals", home: "3", away: "1" },
+    ],
+    topPlayers: [
+      { name: "Mohamed Salah",    team: "Liverpool",  stats: { "Goals": "2", "Assists": "1", "Passes": "42", "Shots": "6", "Tackles": "2", "Interceptions": "0", "Dribbles": "5", "Key Passes": "5", "Fantasy Score": "12.4", "Distance Covered": "10.2" } },
+      { name: "Luis Díaz",        team: "Liverpool",  stats: { "Goals": "1", "Assists": "0", "Passes": "36", "Shots": "4", "Tackles": "3", "Interceptions": "1", "Dribbles": "6", "Key Passes": "4", "Fantasy Score": "9.8",  "Distance Covered": "11.1" } },
+      { name: "Son Heung-min",    team: "Tottenham",  stats: { "Goals": "1", "Assists": "0", "Passes": "28", "Shots": "5", "Tackles": "1", "Interceptions": "0", "Dribbles": "4", "Key Passes": "3", "Fantasy Score": "7.6",  "Distance Covered": "10.4" } },
+    ],
+  },
+  {
+    id: "nrl_fin1",
+    sport: "NRL",
+    league: "NRL Premiership",
+    homeTeam: "Sydney Roosters",
+    awayTeam: "Brisbane Broncos",
+    homeScore: "24",
+    awayScore: "18",
+    time: "Full Time",
+    status: "finished",
+    completedAt: new Date(Date.now() - 14 * 60 * 60 * 1000).toISOString(),
+    stats: [
+      { label: "Tries", home: "4", away: "3" },
+      { label: "Carries", home: "186", away: "174" },
+      { label: "Tackles", home: "368", away: "394" },
+    ],
+    topPlayers: [
+      { name: "James Tedesco",    team: "Sydney Roosters",  stats: { "Tries": "1", "Carries": "22", "Run Metres": "214", "Tackles": "8",  "Line Breaks": "3", "Offloads": "2", "Errors": "0", "Penalties": "0", "Fantasy Score": "68", "Completion Rate": "100%" } },
+      { name: "Joseph Suaalii",   team: "Sydney Roosters",  stats: { "Tries": "2", "Carries": "14", "Run Metres": "156", "Tackles": "4",  "Line Breaks": "2", "Offloads": "1", "Errors": "0", "Penalties": "0", "Fantasy Score": "58", "Completion Rate": "100%" } },
+      { name: "Ezra Mam",         team: "Brisbane Broncos", stats: { "Tries": "1", "Carries": "16", "Run Metres": "132", "Tackles": "18", "Line Breaks": "1", "Offloads": "3", "Errors": "2", "Penalties": "1", "Fantasy Score": "48", "Completion Rate": "88%"  } },
+    ],
+  },
 ];
 
 const SPORTS_CONFIG = [
@@ -674,27 +889,53 @@ const SPORTS_CONFIG = [
       ],
     },
   },
+  {
+    id: "basketball",
+    name: "Basketball",
+    icon: BasketballBall,
+    leagues: ["NBA", "NBL"],
+    teams: {
+      "NBA": [
+        "Atlanta Hawks", "Boston Celtics", "Brooklyn Nets", "Charlotte Hornets",
+        "Chicago Bulls", "Cleveland Cavaliers", "Dallas Mavericks", "Denver Nuggets",
+        "Detroit Pistons", "Golden State Warriors", "Houston Rockets", "Indiana Pacers",
+        "LA Clippers", "LA Lakers", "Memphis Grizzlies", "Miami Heat",
+        "Milwaukee Bucks", "Minnesota Timberwolves", "New Orleans Pelicans", "New York Knicks",
+        "Oklahoma City Thunder", "Orlando Magic", "Philadelphia 76ers", "Phoenix Suns",
+        "Portland Trail Blazers", "Sacramento Kings", "San Antonio Spurs", "Toronto Raptors",
+        "Utah Jazz", "Washington Wizards",
+      ],
+      "NBL": [
+        "Adelaide 36ers", "Brisbane Bullets", "Cairns Taipans", "Illawarra Hawks",
+        "Melbourne United", "New Zealand Breakers", "Perth Wildcats",
+        "SE Melbourne Phoenix", "Sydney Kings",
+      ],
+    },
+  },
 ];
 
 const STATS_OPTIONS: Record<string, string[]> = {
-  AFL: ["Goals", "Behinds", "Disposals", "Marks", "Tackles", "Hit-Outs", "Clearances", "Fantasy Score", "Goal Assists", "Contested Possessions"],
-  NRL: ["Tries", "Carries", "Run Metres", "Tackles", "Line Breaks", "Offloads", "Errors", "Penalties", "Fantasy Score", "Completion Rate"],
-  Cricket: ["Runs", "Balls Faced", "Strike Rate", "Wickets", "Economy", "Overs Bowled", "Catches", "Boundaries", "Sixes", "Fantasy Score"],
-  Football: ["Goals", "Assists", "Passes", "Shots", "Tackles", "Interceptions", "Dribbles", "Key Passes", "Fantasy Score", "Distance Covered"],
+  AFL:        ["Goals", "Behinds", "Disposals", "Marks", "Tackles", "Hit-Outs", "Clearances", "Fantasy Score", "Goal Assists", "Contested Possessions"],
+  NRL:        ["Tries", "Carries", "Run Metres", "Tackles", "Line Breaks", "Offloads", "Errors", "Penalties", "Fantasy Score", "Completion Rate"],
+  Cricket:    ["Runs", "Balls Faced", "Strike Rate", "Wickets", "Economy", "Overs Bowled", "Catches", "Boundaries", "Sixes", "Fantasy Score"],
+  Football:   ["Goals", "Assists", "Passes", "Shots", "Tackles", "Interceptions", "Dribbles", "Key Passes", "Fantasy Score", "Distance Covered"],
+  Basketball: ["Points", "Rebounds", "Assists", "Steals", "Blocks", "Turnovers", "3-Pointers", "FG%", "FT%", "Fantasy Score"],
 };
 
 const DEFAULT_STATS: Record<string, string[]> = {
-  AFL: ["Goals", "Disposals", "Tackles"],
-  NRL: ["Tries", "Carries", "Tackles"],
-  Cricket: ["Runs", "Wickets", "Economy"],
-  Football: ["Goals", "Assists", "Passes"],
+  AFL:        ["Goals", "Disposals", "Tackles"],
+  NRL:        ["Tries", "Carries", "Tackles"],
+  Cricket:    ["Runs", "Wickets", "Economy"],
+  Football:   ["Goals", "Assists", "Passes"],
+  Basketball: ["Points", "Rebounds", "Assists"],
 };
 
 const DEFAULT_SORT: Record<string, string> = {
-  AFL: "Goals",
-  NRL: "Tries",
-  Cricket: "Runs",
-  Football: "Goals",
+  AFL:        "Goals",
+  NRL:        "Tries",
+  Cricket:    "Runs",
+  Football:   "Goals",
+  Basketball: "Points",
 };
 
 // parse any stat value to a sortable number ("112*" → 112, "89%" → 89, "3.8" → 3.8)
@@ -739,8 +980,8 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 
 function BottomNav({ current, onNavigate }: { current: Screen; onNavigate: (s: Screen) => void }) {
   const items = [
-    { id: "home" as Screen, icon: Home, label: "Home" },
     { id: "sports" as Screen, icon: Trophy, label: "Sports" },
+    { id: "scores" as Screen, icon: Radio, label: "Scores" },
     { id: "stats" as Screen, icon: BarChart2, label: "Stats" },
     { id: "settings" as Screen, icon: Settings, label: "Settings" },
   ];
@@ -803,13 +1044,34 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
   );
 }
 
-// ─── Home Screen ──────────────────────────────────────────────────────────────
+// ─── Scores Screen ────────────────────────────────────────────────────────────
 
-function HomeScreen({ onNavigate, matches }: { onNavigate: (s: Screen) => void; matches: Match[] }) {
+function ScoresScreen({ onNavigate, matches, showPrevResults, showUpcoming }: {
+  onNavigate: (s: Screen) => void;
+  matches: Match[];
+  showPrevResults: Record<string, boolean>;
+  showUpcoming: Record<string, boolean>;
+}) {
   const liveMatches = matches.filter((m) => m.status === "live");
+  const upcomingMatches = MATCHES.filter(
+    (m) => m.status === "upcoming" && showUpcoming[m.sport] !== false
+  );
+  const now = Date.now();
+  const recentMatches = MATCHES.filter(
+    (m) =>
+      m.status === "finished" &&
+      m.completedAt &&
+      showPrevResults[m.sport] !== false &&
+      now - new Date(m.completedAt).getTime() <= 24 * 60 * 60 * 1000
+  );
+
+  const hoursAgo = (iso: string) => {
+    const h = Math.round((now - new Date(iso).getTime()) / (60 * 60 * 1000));
+    return h <= 1 ? "1h ago" : `${h}h ago`;
+  };
 
   return (
-    <MobileShell screen="home" onNavigate={onNavigate}>
+    <MobileShell screen="scores" onNavigate={onNavigate}>
       <div className="flex items-center justify-between px-5 pt-6 pb-4">
         <div>
           <h1 className="text-2xl font-black tracking-wider text-foreground uppercase" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
@@ -852,43 +1114,63 @@ function HomeScreen({ onNavigate, matches }: { onNavigate: (s: Screen) => void; 
         ))}
       </div>
 
-      {/* Sport tiles */}
-      <div className="px-5 pb-6">
-        <p className="text-xs text-muted-foreground tracking-widest uppercase mb-3" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Your Sports</p>
-        <div className="grid grid-cols-2 gap-3">
-          {SPORTS_CONFIG.map(({ id, name, icon: Icon, leagues }) => {
-            const sportMatches = matches.filter((m) => m.sport === name);
-            const live = sportMatches.filter((m) => m.status === "live");
-            return (
-              <button
-                key={id}
-                onClick={() => onNavigate("sports")}
-                className="bg-card border border-border rounded p-4 text-left hover:border-primary/40 transition-colors group"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="w-9 h-9 rounded bg-secondary flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                    <Icon size={18} className="text-primary" strokeWidth={2} />
-                  </div>
-                  {live.length > 0 && <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />}
+      {/* Upcoming matches */}
+      {upcomingMatches.length > 0 && (
+        <div className="mx-5 mb-5 border border-border rounded overflow-hidden">
+          <div className="bg-secondary px-3 py-2 flex items-center gap-2 border-b border-border">
+            <Clock size={12} className="text-muted-foreground" />
+            <span className="text-xs text-muted-foreground tracking-widest uppercase" style={{ fontFamily: "'DM Mono', monospace" }}>Upcoming</span>
+          </div>
+          {upcomingMatches.map((m) => (
+            <div key={m.id} className="flex items-center justify-between px-3 py-2.5 border-b border-border last:border-b-0 bg-card">
+              <div>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-1" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>{m.sport} · {m.league}</p>
+                <div className="flex items-center gap-2">
+                  <TeamSwatch team={m.homeTeam} size={13} />
+                  <span className="text-sm text-foreground font-medium">{m.homeTeam}</span>
+                  <span className="text-xs text-muted-foreground" style={{ fontFamily: "'DM Mono', monospace" }}>vs</span>
+                  <span className="text-sm text-foreground font-medium">{m.awayTeam}</span>
+                  <TeamSwatch team={m.awayTeam} size={13} />
                 </div>
-                <p className="text-base font-black text-foreground uppercase tracking-wider" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>{name}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {leagues.length} leagues · {live.length > 0 ? `${live.length} live` : "No live"}
-                </p>
-                {sportMatches.length > 0 && (
-                  <div className="flex items-center gap-1.5 mt-2">
-                    <TeamSwatch team={sportMatches[0].homeTeam} size={12} />
-                    <span className="text-xs text-muted-foreground font-mono truncate" style={{ fontFamily: "'DM Mono', monospace" }}>
-                      {sportMatches[0].homeScore}–{sportMatches[0].awayScore}
-                    </span>
-                    <TeamSwatch team={sportMatches[0].awayTeam} size={12} />
-                  </div>
-                )}
-              </button>
-            );
-          })}
+              </div>
+              <span className="text-sm font-medium text-primary ml-2 flex-shrink-0" style={{ fontFamily: "'DM Mono', monospace" }}>{m.time}</span>
+            </div>
+          ))}
         </div>
-      </div>
+      )}
+
+      {/* Previous results */}
+      {recentMatches.length > 0 && (
+        <div className="px-5 pb-6">
+          <p className="text-xs text-muted-foreground tracking-widest uppercase mb-3" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+            Previous Results · Last 24h
+          </p>
+          <div className="border border-border rounded overflow-hidden">
+            {recentMatches.map((m) => (
+              <div key={m.id} className="flex items-center justify-between px-3 py-2.5 border-b border-border last:border-b-0 bg-card">
+                <div className="min-w-0">
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-1" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                    {m.sport} · {m.league}
+                  </p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <TeamSwatch team={m.homeTeam} size={13} />
+                    <span className="text-sm text-foreground font-medium">{m.homeTeam}</span>
+                    <span className="text-sm font-medium" style={{ fontFamily: "'DM Mono', monospace", color: "#a0aab8" }}>
+                      {m.homeScore}–{m.awayScore}
+                    </span>
+                    <span className="text-sm text-foreground font-medium">{m.awayTeam}</span>
+                    <TeamSwatch team={m.awayTeam} size={13} />
+                  </div>
+                </div>
+                <div className="flex flex-col items-end gap-1 ml-2 flex-shrink-0">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded border border-border text-muted-foreground font-mono tracking-widest" style={{ fontFamily: "'DM Mono', monospace" }}>FT</span>
+                  <span className="text-[10px] text-muted-foreground" style={{ fontFamily: "'DM Mono', monospace" }}>{hoursAgo(m.completedAt!)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </MobileShell>
   );
 }
@@ -898,6 +1180,7 @@ function HomeScreen({ onNavigate, matches }: { onNavigate: (s: Screen) => void; 
 function SportsSelectionScreen({
   onNavigate, enabledLeagues, setEnabledLeagues, selectedTeams, setSelectedTeams,
   enabledStats, setEnabledStats, sortStats, setSortStats, defaultView, setDefaultView,
+  showPrevResults, setShowPrevResults, showUpcoming, setShowUpcoming,
 }: {
   onNavigate: (s: Screen) => void;
   enabledLeagues: Record<string, boolean>;
@@ -910,9 +1193,15 @@ function SportsSelectionScreen({
   setSortStats: (v: Record<string, string>) => void;
   defaultView: Record<string, "stats" | "scoring">;
   setDefaultView: (v: Record<string, "stats" | "scoring">) => void;
+  showPrevResults: Record<string, boolean>;
+  setShowPrevResults: (v: Record<string, boolean>) => void;
+  showUpcoming: Record<string, boolean>;
+  setShowUpcoming: (v: Record<string, boolean>) => void;
 }) {
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-  const [statViewOpen, setStatViewOpen] = useState<Record<string, boolean>>({});
+  // three independent expand maps: league teams, settings section, stats section
+  const [teamsOpen, setTeamsOpen]    = useState<Record<string, boolean>>({});
+  const [settingsOpen, setSettingsOpen] = useState<Record<string, boolean>>({});
+  const [statsOpen, setStatsOpen]    = useState<Record<string, boolean>>({});
 
   const toggleLeague = (league: string) =>
     setEnabledLeagues({ ...enabledLeagues, [league]: !enabledLeagues[league] });
@@ -934,212 +1223,175 @@ function SportsSelectionScreen({
     }
   };
 
+  const bc = "'Barlow Condensed', sans-serif";
+  const mono = "'DM Mono', monospace";
+  const rowBase = "flex items-center gap-3 px-4 py-3 border-t border-border w-full text-left";
+  const subRowBase = "flex items-center gap-3 pl-10 pr-4 py-2.5 border-t border-border/60 bg-secondary/30 hover:bg-secondary/50 transition-colors";
+
   return (
     <MobileShell screen="sports" onNavigate={onNavigate}>
-      <div className="px-5 pt-6 pb-4 border-b border-border flex items-center gap-3">
-        <Trophy size={18} className="text-primary" />
-        <h1 className="text-xl font-black tracking-wider text-foreground uppercase" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
-          Sports & Leagues
+      <div className="flex items-center justify-between px-5 pt-6 pb-4 border-b border-border">
+        <h1 className="text-2xl font-black tracking-wider text-foreground uppercase" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+          SCORE<span className="text-primary">DRIVE</span>
         </h1>
+        <button
+          onClick={() => onNavigate("carplay")}
+          className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded font-black text-sm tracking-wide hover:bg-primary/90 transition-colors"
+          style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
+        >
+          <Car size={16} strokeWidth={2} />
+          DRIVE MODE
+        </button>
       </div>
 
-      <div className="px-5 py-4 space-y-6">
+      <div className="px-4 py-4 space-y-4">
         {SPORTS_CONFIG.map(({ name, icon: Icon, leagues, teams }) => {
-          const activeSortStat = sortStats[name] ?? DEFAULT_SORT[name];
-          const activeDisplayStats = enabledStats[name] ?? DEFAULT_STATS[name];
-          const svOpen = statViewOpen[name] ?? false;
+          const activeSortStat   = sortStats[name] ?? DEFAULT_SORT[name];
+          const activeStats      = enabledStats[name] ?? DEFAULT_STATS[name];
+          const sOpen            = settingsOpen[name] ?? false;
+          const stOpen           = statsOpen[name] ?? false;
 
           return (
-            <div key={name}>
-              {/* Sport header */}
-              <div className="flex items-center gap-2 mb-3">
-                <Icon size={14} className="text-primary" />
-                <h2 className="text-xs font-black tracking-[0.2em] text-muted-foreground uppercase" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
-                  {name}
-                </h2>
+            <div key={name} className="border border-border rounded overflow-hidden bg-card">
+
+              {/* ── Sport header ── */}
+              <div className="flex items-center gap-3 px-4 py-3 bg-secondary/40 border-b border-border">
+                <Icon size={20} />
+                <h2 className="flex-1 font-black tracking-wider text-foreground uppercase text-base" style={{ fontFamily: bc }}>{name}</h2>
               </div>
 
-              <div className="space-y-1">
-                {/* League rows */}
-                {leagues.map((league) => {
-                  const isOn = enabledLeagues[league] !== false;
-                  const isExpanded = expanded[league];
-                  const leagueTeams = (teams as Record<string, string[]>)[league] || [];
-                  const activeTeams = selectedTeams[league] ?? leagueTeams;
-                  return (
-                    <div key={league} className="border border-border rounded overflow-hidden">
-                      <div className="flex items-center px-3 py-3 bg-card gap-3">
-                        <Toggle checked={isOn} onChange={() => toggleLeague(league)} />
-                        <span className="flex-1 text-sm font-medium text-foreground">{league}</span>
-                        {isOn && (
-                          <span className="text-xs text-muted-foreground mr-2" style={{ fontFamily: "'DM Mono', monospace" }}>
-                            {activeTeams.length}/{leagueTeams.length}
-                          </span>
-                        )}
-                        {isOn && (
-                          <button
-                            onClick={() => setExpanded((e) => ({ ...e, [league]: !e[league] }))}
-                            className="text-muted-foreground hover:text-foreground transition-colors"
-                          >
-                            {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                          </button>
-                        )}
-                      </div>
-                      {isOn && isExpanded && (
-                        <div className="border-t border-border bg-secondary/40 divide-y divide-border">
-                          {leagueTeams.map((team) => (
-                            <div key={team} className="flex items-center gap-3 px-3 py-2.5 hover:bg-secondary/60 transition-colors">
-                              <TeamSwatch team={team} size={14} />
-                              <span className="flex-1 text-sm text-foreground">{team}</span>
-                              <Toggle
-                                checked={activeTeams.includes(team)}
-                                onChange={() => toggleTeam(league, team, leagueTeams)}
-                              />
-                            </div>
-                          ))}
-                        </div>
+              {/* ── League rows ── */}
+              {leagues.map((league) => {
+                const isOn      = enabledLeagues[league] !== false;
+                const tOpen     = teamsOpen[league] ?? false;
+                const leagueTeams = (teams as Record<string, string[]>)[league] || [];
+                const activeTeams = selectedTeams[league] ?? leagueTeams;
+                return (
+                  <div key={league}>
+                    {/* League header row */}
+                    <div className="flex items-center gap-3 px-4 py-3 border-t border-border">
+                      <Toggle checked={isOn} onChange={() => setEnabledLeagues({ ...enabledLeagues, [league]: !enabledLeagues[league] })} />
+                      <span className="flex-1 text-sm font-medium text-foreground">{league}</span>
+                      {isOn && (
+                        <span className="text-xs text-muted-foreground" style={{ fontFamily: mono }}>
+                          {activeTeams.length}/{leagueTeams.length} teams
+                        </span>
+                      )}
+                      {isOn && (
+                        <button onClick={() => setTeamsOpen((t) => ({ ...t, [league]: !t[league] }))}
+                          className="ml-2 text-muted-foreground hover:text-foreground transition-colors">
+                          {tOpen ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+                        </button>
                       )}
                     </div>
-                  );
-                })}
+                    {/* Team rows (indented) */}
+                    {isOn && tOpen && leagueTeams.map((team) => (
+                      <div key={team} className={subRowBase}>
+                        <TeamSwatch team={team} size={13} />
+                        <span className="flex-1 text-sm text-foreground">{team}</span>
+                        <Toggle checked={activeTeams.includes(team)} onChange={() => toggleTeam(league, team, leagueTeams)} />
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
 
-                {/* ── Stat Views accordion ── */}
-                <div className="border border-primary/30 rounded overflow-hidden">
-                  <button
-                    onClick={() => setStatViewOpen((s) => ({ ...s, [name]: !s[name] }))}
-                    className="w-full flex items-center px-3 py-3 bg-card gap-3 hover:bg-secondary/50 transition-colors"
-                  >
-                    <div className="w-5 h-5 rounded bg-primary/15 flex items-center justify-center flex-shrink-0">
-                      <SlidersHorizontal size={11} className="text-primary" />
+              {/* ── Settings section ── */}
+              <div className="border-t border-border">
+                <button className={`${rowBase} hover:bg-secondary/40 transition-colors`}
+                  onClick={() => setSettingsOpen((s) => ({ ...s, [name]: !s[name] }))}>
+                  <Settings size={14} className="text-muted-foreground flex-shrink-0" />
+                  <span className="flex-1 text-sm font-medium text-foreground">Settings</span>
+                  {sOpen ? <ChevronUp size={15} className="text-muted-foreground" /> : <ChevronDown size={15} className="text-muted-foreground" />}
+                </button>
+                {sOpen && (
+                  <div className="border-t border-border bg-secondary/20 divide-y divide-border/60">
+                    {/* Default drive view */}
+                    <div className="px-4 py-3">
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-2" style={{ fontFamily: bc }}>Default drive view</p>
+                      <div className="flex gap-2">
+                        {(["stats", "scoring"] as const).map((v) => (
+                          <button key={v} onClick={() => setDefaultView({ ...defaultView, [name]: v })}
+                            className={`flex-1 px-3 py-2 rounded text-xs font-medium transition-colors ${(defaultView[name] ?? "stats") === v ? "bg-primary text-primary-foreground" : "bg-card border border-border text-muted-foreground hover:text-foreground"}`}
+                            style={{ fontFamily: bc }}>
+                            {v === "stats" ? "Stats Table" : "Scoring View"}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                    <span className="flex-1 text-sm font-medium text-foreground text-left">Stat Views</span>
-                    <span className="text-xs text-primary mr-2 truncate max-w-[120px]" style={{ fontFamily: "'DM Mono', monospace" }}>
-                      Sort: {activeSortStat}
-                    </span>
-                    <span className="text-xs text-muted-foreground mr-1" style={{ fontFamily: "'DM Mono', monospace" }}>
-                      {activeDisplayStats.length}/5
-                    </span>
-                    {svOpen ? <ChevronUp size={16} className="text-muted-foreground flex-shrink-0" /> : <ChevronDown size={16} className="text-muted-foreground flex-shrink-0" />}
-                  </button>
-
-                  {svOpen && (
-                    <div className="border-t border-primary/20 bg-secondary/30">
-                      {/* Sort by */}
-                      <div className="px-3 pt-3 pb-2">
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-2" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
-                          Sort players by
-                        </p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {STATS_OPTIONS[name].map((stat) => (
-                            <button
-                              key={stat}
-                              onClick={() => setSortStats({ ...sortStats, [name]: stat })}
-                              className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${activeSortStat === stat ? "bg-primary text-primary-foreground" : "bg-card border border-border text-muted-foreground hover:text-foreground"}`}
-                              style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
-                            >
-                              {stat}
-                            </button>
-                          ))}
-                        </div>
+                    {/* Show upcoming */}
+                    <div className="flex items-center justify-between px-4 py-3">
+                      <div>
+                        <p className="text-sm font-medium text-foreground">Show Upcoming Matches</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">Upcoming fixtures on Scores tab</p>
                       </div>
+                      <Toggle checked={showUpcoming[name] !== false} onChange={(v) => setShowUpcoming({ ...showUpcoming, [name]: v })} />
+                    </div>
+                    {/* Show previous results */}
+                    <div className="flex items-center justify-between px-4 py-3">
+                      <div>
+                        <p className="text-sm font-medium text-foreground">Show Previous Results</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">Last 24h results on Scores tab</p>
+                      </div>
+                      <Toggle checked={showPrevResults[name] !== false} onChange={(v) => setShowPrevResults({ ...showPrevResults, [name]: v })} />
+                    </div>
+                  </div>
+                )}
+              </div>
 
-                      {/* Divider */}
-                      <div className="mx-3 border-t border-border" />
-
-                      {/* Displayed stats */}
-                      <div className="px-3 pt-2 pb-3">
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-widest" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
-                            Displayed stats
-                          </p>
-                          <span className="text-[10px] text-muted-foreground font-mono" style={{ fontFamily: "'DM Mono', monospace" }}>
-                            {activeDisplayStats.length}/5 · min 3
-                          </span>
-                        </div>
-                        <div className="space-y-1">
-                          {STATS_OPTIONS[name].map((stat) => {
-                            const on = activeDisplayStats.includes(stat);
-                            const atMin = on && activeDisplayStats.length <= 3;
-                            const atMax = !on && activeDisplayStats.length >= 5;
-                            return (
-                              <div
-                                key={stat}
-                                className={`flex items-center justify-between bg-card border border-border rounded px-3 py-2 ${atMin ? "opacity-50" : ""}`}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs text-foreground">{stat}</span>
-                                  {atMin && <span className="text-[9px] text-muted-foreground font-mono">(min)</span>}
-                                  {atMax && <span className="text-[9px] text-muted-foreground font-mono">(max)</span>}
-                                </div>
-                                <Toggle checked={on} onChange={() => toggleDisplayStat(name, stat)} />
+              {/* ── Stats section ── */}
+              <div className="border-t border-border">
+                <button className={`${rowBase} hover:bg-secondary/40 transition-colors`}
+                  onClick={() => setStatsOpen((s) => ({ ...s, [name]: !s[name] }))}>
+                  <BarChart2 size={14} className="text-muted-foreground flex-shrink-0" />
+                  <span className="flex-1 text-sm font-medium text-foreground">Stats</span>
+                  <span className="text-xs text-primary mr-2 truncate max-w-[110px]" style={{ fontFamily: mono }}>
+                    Sort: {activeSortStat}
+                  </span>
+                  <span className="text-xs text-muted-foreground mr-1" style={{ fontFamily: mono }}>{activeStats.length}/5</span>
+                  {stOpen ? <ChevronUp size={15} className="text-muted-foreground" /> : <ChevronDown size={15} className="text-muted-foreground" />}
+                </button>
+                {stOpen && (
+                  <div className="border-t border-border bg-secondary/20">
+                    {/* Sort by */}
+                    <div className="px-4 pt-3 pb-2">
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-2" style={{ fontFamily: bc }}>Sort players by</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {STATS_OPTIONS[name].map((stat) => (
+                          <button key={stat} onClick={() => setSortStats({ ...sortStats, [name]: stat })}
+                            className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${activeSortStat === stat ? "bg-primary text-primary-foreground" : "bg-card border border-border text-muted-foreground hover:text-foreground"}`}
+                            style={{ fontFamily: bc }}>
+                            {stat}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    {/* Displayed stats */}
+                    <div className="px-4 pt-1 pb-3 border-t border-border/60">
+                      <div className="flex items-center justify-between mb-2 mt-2">
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest" style={{ fontFamily: bc }}>Displayed stats</p>
+                        <span className="text-[10px] text-muted-foreground" style={{ fontFamily: mono }}>{activeStats.length}/5 · min 3</span>
+                      </div>
+                      <div className="space-y-1">
+                        {STATS_OPTIONS[name].map((stat) => {
+                          const on   = activeStats.includes(stat);
+                          const atMin = on && activeStats.length <= 3;
+                          const atMax = !on && activeStats.length >= 5;
+                          return (
+                            <div key={stat} className={`flex items-center justify-between bg-card border border-border rounded px-3 py-2 ${atMin ? "opacity-50" : ""}`}>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-foreground">{stat}</span>
+                                {atMin && <span className="text-[9px] text-muted-foreground">(min)</span>}
+                                {atMax && <span className="text-[9px] text-muted-foreground">(max)</span>}
                               </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Divider */}
-                      <div className="mx-3 border-t border-border" />
-
-                      {/* Default View */}
-                      <div className="px-3 pt-2 pb-3">
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-2" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
-                          Default drive view
-                        </p>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => setDefaultView({ ...defaultView, [name]: "stats" })}
-                            className={`flex-1 px-3 py-2 rounded text-xs font-medium transition-colors ${(defaultView[name] ?? "stats") === "stats" ? "bg-primary text-primary-foreground" : "bg-card border border-border text-muted-foreground hover:text-foreground"}`}
-                            style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
-                          >
-                            Stats Table
-                          </button>
-                          <button
-                            onClick={() => setDefaultView({ ...defaultView, [name]: "scoring" })}
-                            className={`flex-1 px-3 py-2 rounded text-xs font-medium transition-colors ${(defaultView[name] ?? "stats") === "scoring" ? "bg-primary text-primary-foreground" : "bg-card border border-border text-muted-foreground hover:text-foreground"}`}
-                            style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
-                          >
-                            Scoring
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Drive mode preview — top 3 players */}
-                      {(() => {
-                        const pm = MATCHES.find((m) => m.sport === name && m.status === "live");
-                        if (!pm || pm.topPlayers.length === 0) return null;
-                        const preview = [...pm.topPlayers]
-                          .sort((a, b) => parseStatNum(b.stats[activeSortStat]) - parseStatNum(a.stats[activeSortStat]))
-                          .slice(0, activeDisplayStats.length);
-                        return (
-                          <div className="mx-3 mb-3 border border-border rounded bg-[#030507] overflow-hidden">
-                            <div className="flex items-center justify-between px-3 py-1.5 border-b border-border">
-                              <span className="text-[9px] text-muted-foreground uppercase tracking-widest" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Drive preview</span>
-                              <span className="text-[9px] text-primary font-mono" style={{ fontFamily: "'DM Mono', monospace" }}>{activeSortStat}</span>
+                              <Toggle checked={on} onChange={() => toggleDisplayStat(name, stat)} />
                             </div>
-                            {preview.map((p, i) => (
-                              <div key={p.name} className="px-3 py-1.5 border-b border-border last:border-b-0">
-                                <div className="flex items-center gap-2 mb-0.5">
-                                  <span className="text-[10px] w-3 text-center flex-shrink-0" style={{ fontFamily: "'DM Mono', monospace", color: i === 0 ? "#00e57a" : "#5a6578" }}>{i + 1}</span>
-                                  <TeamSwatch team={p.team} size={10} />
-                                  <span className="flex-1 text-[11px] font-black uppercase truncate" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "#f0f2f5" }}>{p.name}</span>
-                                </div>
-                                <div className="flex flex-wrap gap-x-2 pl-5">
-                                  {activeDisplayStats.map((stat) => (
-                                    <span key={stat} className="text-[9px]" style={{ fontFamily: "'DM Mono', monospace" }}>
-                                      <span className="text-muted-foreground">{stat} </span>
-                                      <span style={{ color: stat === activeSortStat ? "#00e57a" : "#a0aab8" }}>{p.stats[stat] ?? "–"}</span>
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        );
-                      })()}
+                          );
+                        })}
+                      </div>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           );
@@ -1147,22 +1399,14 @@ function SportsSelectionScreen({
       </div>
 
       <div className="px-5 pb-6 pt-2">
-        <div className="flex gap-3">
-          <button
-            onClick={() => onNavigate("home")}
-            className="flex-1 bg-secondary text-foreground border border-border py-3 rounded font-black tracking-wider text-sm uppercase hover:bg-secondary/80 transition-colors"
-            style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
-          >
-            Back to Home
-          </button>
-          <button
-            onClick={() => onNavigate("home")}
-            className="flex-1 bg-primary text-primary-foreground py-3 rounded font-black tracking-wider text-sm uppercase hover:bg-primary/90 transition-colors"
-            style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
-          >
-            Save Preferences
-          </button>
-        </div>
+        <button
+          onClick={() => onNavigate("scores")}
+          className="w-full flex items-center justify-center gap-2 bg-secondary border border-border text-muted-foreground py-3 rounded font-black text-sm tracking-wide uppercase hover:text-foreground transition-colors"
+          style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
+        >
+          <Radio size={14} />
+          View Live Scores
+        </button>
       </div>
     </MobileShell>
   );
@@ -2025,6 +2269,7 @@ function CarplayScreen({ onExit, matches, enabledStats, sortStats, defaultView }
   const sportIcons: Record<string, React.ReactNode> = {
     AFL: <AflBall size={14} />, NRL: <NrlBall size={14} />,
     Cricket: <CricketBall size={14} />, Football: <SoccerBall size={14} />,
+    Basketball: <BasketballBall size={14} />,
   };
 
   if (!match) return (
@@ -2478,15 +2723,19 @@ export default function App() {
     "NRL Premiership": true, "State of Origin": false,
     "International Test Cricket": true, "BBL": false, "IPL": false,
     "Premier League": true, "La Liga": false, "UEFA Champions League": true,
+    "NBA": true, "NBL": true,
   });
   const [selectedTeams, setSelectedTeams] = useState<Record<string, string[]>>({});
   const [enabledStats, setEnabledStats] = useState<Record<string, string[]>>({});
   const [sortStats, setSortStats] = useState<Record<string, string>>({ ...DEFAULT_SORT });
   const [defaultView, setDefaultView] = useState<Record<string, "stats" | "scoring">>({
-    AFL: "stats",
-    NRL: "stats", 
-    Cricket: "stats",
-    Football: "stats",
+    AFL: "stats", NRL: "stats", Cricket: "stats", Football: "stats", Basketball: "stats",
+  });
+  const [showPrevResults, setShowPrevResults] = useState<Record<string, boolean>>({
+    AFL: true, NRL: true, Cricket: true, Football: true, Basketball: true,
+  });
+  const [showUpcoming, setShowUpcoming] = useState<Record<string, boolean>>({
+    AFL: true, NRL: true, Cricket: true, Football: true, Basketball: true,
   });
   const [refreshInterval, setRefreshInterval] = useState(30);
 
@@ -2495,8 +2744,8 @@ export default function App() {
 
   return (
     <div className="size-full bg-background text-foreground overflow-hidden" style={{ fontFamily: "'Barlow', sans-serif" }}>
-      {screen === "splash" && <SplashScreen onDone={() => navigate("home")} />}
-      {screen === "home" && <HomeScreen onNavigate={navigate} matches={visibleMatches} />}
+      {screen === "splash" && <SplashScreen onDone={() => navigate("sports")} />}
+      {screen === "scores" && <ScoresScreen onNavigate={navigate} matches={visibleMatches} showPrevResults={showPrevResults} showUpcoming={showUpcoming} />}
       {screen === "sports" && (
         <SportsSelectionScreen
           onNavigate={navigate}
@@ -2510,6 +2759,10 @@ export default function App() {
           setSortStats={setSortStats}
           defaultView={defaultView}
           setDefaultView={setDefaultView}
+          showPrevResults={showPrevResults}
+          setShowPrevResults={setShowPrevResults}
+          showUpcoming={showUpcoming}
+          setShowUpcoming={setShowUpcoming}
         />
       )}
       {screen === "stats" && (
@@ -2528,7 +2781,7 @@ export default function App() {
           setRefreshInterval={setRefreshInterval}
         />
       )}
-      {screen === "carplay" && <CarplayScreen onExit={() => navigate("home")} matches={visibleMatches} enabledStats={enabledStats} sortStats={sortStats} defaultView={defaultView} />}
+      {screen === "carplay" && <CarplayScreen onExit={() => navigate("sports")} matches={visibleMatches} enabledStats={enabledStats} sortStats={sortStats} defaultView={defaultView} />}
     </div>
   );
 }
